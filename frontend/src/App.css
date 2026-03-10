@@ -1,29 +1,13 @@
 /* ============================================================
-   GTO Poker Calculator — Dark Poker Theme
+   GTO Poker Calculator — Application Styles
+   All values reference design-system.css tokens only.
+   Depth strategy: Borders-only. No decorative box-shadows.
+   Spacing: Strict 8px grid via --space-* tokens.
    ============================================================ */
 
-:root {
-  --bg-deep:       #0d0d1a;
-  --bg-dark:       #1a1a2e;
-  --bg-card:       #16213e;
-  --bg-panel:      #1f2b4a;
-  --accent-green:  #00c785;
-  --accent-green2: #0f9b60;
-  --accent-blue:   #0f3460;
-  --accent-gold:   #e2b96f;
-  --text-primary:  #e8eaf0;
-  --text-secondary:#9aa3b8;
-  --text-muted:    #556080;
-  --border:        #2a3558;
-  --red:           #e05c5c;
-  --yellow:        #d4a843;
-  --green:         #3cb96e;
-  --grey:          #3a4060;
-  --radius:        8px;
-  --radius-lg:     12px;
-  --shadow:        0 4px 20px rgba(0,0,0,0.5);
-  --transition:    0.18s ease;
-}
+@import './design-system.css';
+
+/* ─── Reset ──────────────────────────────────────────────── */
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -31,106 +15,155 @@
   padding: 0;
 }
 
+
+/* ─── Base ───────────────────────────────────────────────── */
+
 body {
-  background: var(--bg-deep);
+  background: var(--felt);
   color: var(--text-primary);
-  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  font-size: 14px;
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
   line-height: 1.5;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ─── Layout ─────────────────────────────────────────── */
+
+/* ─── Layout ─────────────────────────────────────────────── */
 
 .app-wrapper {
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 0 16px 40px;
+  padding: 0 var(--space-3) var(--space-6);
 }
+
+
+/* ─── Header — Bloomberg/terminal display aesthetic ──────── */
 
 .app-header {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 20px 0 16px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 24px;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-3) 0 var(--space-2);
+  border-bottom: 1px solid var(--border-default);
+  margin-bottom: var(--space-4);
 }
 
 .app-header h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.3px;
-  background: linear-gradient(135deg, var(--accent-green), var(--accent-gold));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--gold);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* Separator pip between title and subtitle */
+.app-header h1::after {
+  content: ' //';
+  color: var(--text-muted);
+  font-weight: var(--weight-normal);
+  letter-spacing: var(--tracking-normal);
 }
 
 .app-header .subtitle {
-  color: var(--text-secondary);
-  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
   margin-left: auto;
+  font-variant-numeric: tabular-nums;
 }
 
-/* ─── Tabs ────────────────────────────────────────────── */
+
+/* ─── Tab Bar — HUD toolbar aesthetic ───────────────────── */
+/*
+  Not a pill container — looks like a terminal toolbar strip.
+  Sits flush against a bottom border that merges with the content.
+*/
 
 .tab-bar {
   display: flex;
-  gap: 4px;
-  margin-bottom: 24px;
-  background: var(--bg-card);
-  padding: 4px;
-  border-radius: var(--radius-lg);
-  width: fit-content;
+  gap: 0;
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border-default);
+  width: 100%;
 }
 
 .tab-btn {
   background: transparent;
   border: none;
+  border-bottom: 2px solid transparent;
   color: var(--text-secondary);
-  font-size: 0.9rem;
-  font-weight: 500;
-  padding: 8px 20px;
-  border-radius: var(--radius);
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: -1px;       /* merge with tab-bar border */
   cursor: pointer;
-  transition: all var(--transition);
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+  white-space: nowrap;
 }
 
 .tab-btn:hover {
   color: var(--text-primary);
-  background: var(--bg-panel);
+  border-bottom-color: var(--border-strong);
 }
 
 .tab-btn.active {
-  background: var(--accent-green2);
-  color: #fff;
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+  font-weight: var(--weight-semi);
 }
 
-/* ─── Panels ──────────────────────────────────────────── */
+
+/* ─── Panels ──────────────────────────────────────────────── */
+/*
+  Input panels use --baize surface.
+  Output panels (results, grid) use --felt surface + stronger border.
+  This gives a subtle visual distinction: input=recessed, output=prominent.
+*/
 
 .panel {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 20px;
-  box-shadow: var(--shadow);
+  background: var(--baize);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+/* Output panels: slightly darker (felt base) with stronger border */
+.panel-output {
+  background: var(--felt);
+  border-color: var(--border-strong);
 }
 
 .panel-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--accent-gold);
-  margin-bottom: 16px;
-  letter-spacing: 0.3px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semi);
+  color: var(--text-secondary);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  margin-bottom: var(--space-2);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-/* ─── Pre-flop layout ────────────────────────────────── */
+/* Gold panel title variant — for primary data panels */
+.panel-title-gold {
+  color: var(--gold);
+}
+
+
+/* ─── Pre-flop layout ────────────────────────────────────── */
 
 .preflop-layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 20px;
+  grid-template-columns: 264px 1fr;
+  gap: var(--space-3);
   align-items: start;
 }
 
@@ -143,123 +176,182 @@ body {
 .sidebar {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-2);
 }
 
-/* ─── Form controls ───────────────────────────────────── */
+
+/* ─── Form controls ───────────────────────────────────────── */
 
 label {
   display: block;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semi);
+  color: var(--text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 6px;
+  letter-spacing: var(--tracking-caps);
+  margin-bottom: var(--space-1);
 }
 
 input[type="number"],
 input[type="text"],
 select {
   width: 100%;
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: var(--rail);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-sm);
   color: var(--text-primary);
-  font-size: 0.9rem;
-  padding: 8px 10px;
-  transition: border-color var(--transition);
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  padding: var(--space-1) var(--space-2);
+  height: 32px;
+  transition: border-color var(--transition-fast);
   outline: none;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 input[type="number"]:focus,
 input[type="text"]:focus,
 select:focus {
-  border-color: var(--accent-green);
+  border-color: var(--control-focus);
+}
+
+input[type="number"]:hover,
+input[type="text"]:hover,
+select:hover {
+  border-color: var(--border-strong);
 }
 
 input[type="range"] {
   width: 100%;
-  accent-color: var(--accent-green);
+  accent-color: var(--chip);
+  cursor: pointer;
+  height: 4px;
+}
+
+input[type="checkbox"] {
+  accent-color: var(--chip);
+  cursor: pointer;
+  width: auto;
+}
+
+select {
+  background-image: none;
   cursor: pointer;
 }
 
-/* ─── Buttons ─────────────────────────────────────────── */
+
+/* ─── Buttons ─────────────────────────────────────────────── */
+/*
+  Two visual categories:
+  - Action buttons (Solve/Stop): full-color fill, 32px height
+  - Position/selector buttons: ghost style, compact 28px height
+*/
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  border: none;
-  border-radius: var(--radius);
+  gap: var(--space-1);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 600;
-  padding: 9px 18px;
-  transition: all var(--transition);
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semi);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  height: 32px;
+  padding: 0 var(--space-2);
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  white-space: nowrap;
+  border: 1px solid transparent;
 }
 
 .btn-primary {
-  background: var(--accent-green2);
-  color: #fff;
+  background: var(--chip);
+  color: var(--text-primary);
+  border-color: var(--chip);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--accent-green);
-  transform: translateY(-1px);
+  background: var(--chip-bright);
+  border-color: var(--chip-bright);
+}
+
+.btn-primary:active:not(:disabled) {
+  background: var(--primitive-chip-2);
 }
 
 .btn-primary:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .btn-secondary {
-  background: var(--bg-panel);
-  color: var(--text-primary);
-  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: var(--border-strong);
 }
 
 .btn-secondary:hover {
-  border-color: var(--accent-green);
-  color: var(--accent-green);
+  color: var(--text-primary);
+  border-color: var(--border-focus);
 }
 
-/* Position button group */
+/* Position buttons — compact selector style */
 .position-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-1);
 }
 
 .position-btn {
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: var(--rail);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
   color: var(--text-secondary);
   cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 6px 10px;
-  transition: all var(--transition);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-normal);
+  padding: 0 var(--space-2);
+  height: 28px;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  white-space: nowrap;
 }
 
 .position-btn:hover {
-  border-color: var(--accent-green);
-  color: var(--accent-green);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+  background: var(--rim);
 }
 
 .position-btn.selected {
-  background: var(--accent-green2);
-  border-color: var(--accent-green2);
-  color: #fff;
+  background: var(--rim);
+  border-color: var(--gold);
+  color: var(--gold);
 }
 
-/* ─── Hand Grid ───────────────────────────────────────── */
+
+/* ─── Hand Grid ───────────────────────────────────────────── */
+/*
+  The signature element — given distinct framing.
+  Felt-texture is evoked through the dense border grid itself.
+*/
 
 .hand-grid-wrapper {
   overflow: auto;
+}
+
+/* Outer framing for the entire grid system */
+.hand-grid-frame {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  background: var(--felt);
+  display: inline-block;
+  min-width: 540px;
 }
 
 .hand-grid {
@@ -271,115 +363,168 @@ input[type="range"] {
 
 .hand-cell {
   aspect-ratio: 1;
-  border-radius: 3px;
+  border-radius: 2px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: -0.3px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.5px;
   position: relative;
-  transition: transform var(--transition), box-shadow var(--transition);
-  background: var(--grey);
-  color: rgba(255,255,255,0.6);
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+  background: var(--range-dead);
+  color: var(--text-muted);
+  border: 1px solid transparent;
   user-select: none;
 }
 
 .hand-cell:hover {
-  transform: scale(1.15);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  transform: scale(1.18);
+  border-color: rgba(232, 240, 232, 0.5);
   z-index: 10;
+  color: var(--text-primary);
 }
 
-.hand-cell.raise  { background: var(--green);  color: #fff; }
-.hand-cell.mixed  { background: var(--yellow); color: #1a1a00; }
-.hand-cell.fold   { background: var(--red);    color: #fff; }
-.hand-cell.grey   { background: var(--grey);   color: rgba(255,255,255,0.4); }
+/* Frequency class states */
+.hand-cell.raise {
+  background: var(--range-raise);
+  color: var(--felt);
+}
 
+.hand-cell.mixed {
+  background: var(--range-mixed);
+  color: var(--primitive-felt-1);
+}
+
+.hand-cell.fold {
+  background: var(--range-rare);
+  color: var(--text-primary);
+}
+
+.hand-cell.grey {
+  background: var(--range-dead);
+  color: var(--text-muted);
+}
+
+/* Selected hand — gold ring, precise not soft */
 .hand-cell.selected-hand {
-  outline: 2px solid var(--accent-gold);
-  outline-offset: 1px;
+  outline: 2px solid var(--gold);
+  outline-offset: 0px;
+  z-index: 5;
 }
 
+/* Tooltip — the one legitimate use of a shadow (genuine lift) */
 .hand-cell-tooltip {
   position: absolute;
-  bottom: calc(100% + 6px);
+  bottom: calc(100% + var(--space-1));
   left: 50%;
   transform: translateX(-50%);
-  background: var(--bg-dark);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 6px 10px;
+  background: var(--overlay);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
   white-space: nowrap;
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  font-variant-numeric: tabular-nums;
   color: var(--text-primary);
   pointer-events: none;
   z-index: 100;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+  box-shadow: var(--shadow-tooltip);
+}
+
+/* Grid axis labels */
+.grid-axis-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: var(--weight-bold);
+  color: var(--text-muted);
 }
 
 /* Grid legend */
 .grid-legend {
   display: flex;
-  gap: 14px;
-  margin-top: 12px;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
   flex-wrap: wrap;
+  align-items: center;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border-subtle);
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 0.78rem;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
   color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 .legend-swatch {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 2px;
+  flex-shrink: 0;
 }
 
-/* ─── Selected Hand Info ─────────────────────────────── */
+
+/* ─── Selected Hand Info ──────────────────────────────────── */
 
 .selected-hand-info {
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px 14px;
-  font-size: 0.85rem;
+  font-size: var(--text-base);
 }
 
 .selected-hand-info .hand-name {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--accent-gold);
-  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--gold);
+  letter-spacing: var(--tracking-tight);
+  margin-bottom: var(--space-1);
+  line-height: 1.1;
 }
 
 .freq-row {
   display: flex;
   justify-content: space-between;
-  padding: 3px 0;
-  border-bottom: 1px solid var(--border);
+  align-items: center;
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-.freq-row:last-child { border-bottom: none; }
+.freq-row:last-child {
+  border-bottom: none;
+}
 
-.freq-label { color: var(--text-secondary); }
+.freq-label {
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
+}
+
 .freq-value {
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
   font-variant-numeric: tabular-nums;
 }
 
-/* ─── Solver Section ──────────────────────────────────── */
+
+/* ─── Post-flop layout ────────────────────────────────────── */
 
 .postflop-layout {
   display: grid;
-  grid-template-columns: 340px 1fr;
-  gap: 20px;
+  grid-template-columns: 320px 1fr;
+  gap: var(--space-3);
   align-items: start;
 }
 
@@ -389,44 +534,50 @@ input[type="range"] {
   }
 }
 
+/* Card inputs — two-char card entry fields */
 .board-input {
   display: flex;
-  gap: 6px;
+  gap: var(--space-1);
   flex-wrap: wrap;
 }
 
 .board-input input {
-  width: 52px;
+  width: 48px;
   text-align: center;
-  font-weight: 700;
-  font-size: 1rem;
-  padding: 6px 4px;
+  font-family: var(--font-mono);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-md);
+  padding: 0 var(--space-1);
   text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .hand-input {
   display: flex;
-  gap: 6px;
+  gap: var(--space-1);
 }
 
 .hand-input input {
-  width: 60px;
+  width: 56px;
   text-align: center;
-  font-weight: 700;
-  font-size: 1rem;
+  font-family: var(--font-mono);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-md);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* Stack inputs */
 .stacks-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: var(--space-1);
 }
 
 .stack-input-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .stack-input-group label {
@@ -436,156 +587,212 @@ input[type="range"] {
 
 .stack-input-group input {
   text-align: center;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
-/* ─── Strategy Display ───────────────────────────────── */
+
+/* ─── Strategy Display ────────────────────────────────────── */
+/*
+  Output panel surface treatment — slightly darker than input panels
+  to signal "this is computed output, not editable input."
+*/
 
 .strategy-chart {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-2);
 }
 
 .strategy-bar-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2);
 }
 
 .strategy-bar-label {
-  min-width: 120px;
-  font-size: 0.82rem;
+  min-width: 128px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
   color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
 }
 
 .strategy-bar-track {
   flex: 1;
-  background: var(--bg-panel);
-  border-radius: 4px;
-  height: 22px;
+  background: var(--rail);
+  border: 1px solid var(--border-subtle);
+  border-radius: 2px;
+  height: 20px;
   overflow: hidden;
   position: relative;
 }
 
 .strategy-bar-fill {
   height: 100%;
-  border-radius: 4px;
-  transition: width 0.4s ease;
+  border-radius: 1px;
+  transition: width 0.35s ease-out;
 }
 
 .strategy-bar-pct {
-  min-width: 44px;
+  min-width: 48px;
   text-align: right;
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
   font-variant-numeric: tabular-nums;
   color: var(--text-primary);
 }
 
-/* Action colour mapping */
-.action-fold   { background: var(--red); }
-.action-check  { background: #4a90d9; }
-.action-call   { background: #5b8cff; }
-.action-bet    { background: var(--green); }
-.action-raise  { background: var(--accent-gold); }
-.action-other  { background: var(--text-muted); }
+/* Action colour mapping — all trace to design-system.css tokens */
+.action-fold   { background: var(--action-fold); }
+.action-check  { background: var(--action-check); }
+.action-call   { background: var(--action-call); }
+.action-bet    { background: var(--action-bet); }
+.action-raise  { background: var(--action-raise); }
+.action-other  { background: var(--action-other); }
 
-/* ─── Progress bar ────────────────────────────────────── */
+
+/* ─── Equity badge ────────────────────────────────────────── */
+/*
+  Monospaced, tabular-nums for the equity number.
+  Sits in the output panel section — distinct from input panels.
+*/
+
+.equity-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  background: var(--rail);
+  border: 1px solid var(--border-default);
+  border-left: 3px solid var(--chip);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.equity-badge .eq-label {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  font-weight: var(--weight-normal);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
+}
+
+.equity-number {
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+  color: var(--chip-bright);
+  letter-spacing: var(--tracking-tight);
+}
+
+
+/* ─── Progress bar ────────────────────────────────────────── */
 
 .progress-wrap {
-  margin-top: 12px;
+  margin-top: var(--space-2);
 }
 
 .progress-label {
-  font-size: 0.78rem;
-  color: var(--text-secondary);
-  margin-bottom: 4px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-1);
+  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
 }
 
 .progress-track {
-  background: var(--bg-panel);
-  border-radius: 4px;
-  height: 8px;
+  background: var(--rail);
+  border: 1px solid var(--border-subtle);
+  border-radius: 2px;
+  height: 4px;
   overflow: hidden;
 }
 
 .progress-fill {
-  background: var(--accent-green);
+  background: var(--chip);
   height: 100%;
-  border-radius: 4px;
-  transition: width 0.3s ease;
+  border-radius: 1px;
+  transition: width 0.25s ease-out;
 }
 
-/* ─── Equity badge ────────────────────────────────────── */
 
-.equity-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 8px 14px;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--accent-green);
-  margin-top: 12px;
-}
-
-.equity-badge .eq-label {
-  font-size: 0.78rem;
-  color: var(--text-secondary);
-  font-weight: 400;
-}
-
-/* ─── Misc ────────────────────────────────────────────── */
+/* ─── Misc ────────────────────────────────────────────────── */
 
 .form-row {
-  margin-bottom: 14px;
+  margin-bottom: var(--space-2);
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
 }
 
 .row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2);
 }
 
 .divider {
   height: 1px;
-  background: var(--border);
-  margin: 16px 0;
+  background: var(--border-subtle);
+  margin: var(--space-2) 0;
 }
 
 .text-muted {
   color: var(--text-muted);
-  font-size: 0.82rem;
+  font-size: var(--text-xs);
 }
 
 .error-msg {
-  color: var(--red);
-  font-size: 0.82rem;
-  margin-top: 6px;
+  color: var(--action-fold);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  margin-top: var(--space-1);
+  letter-spacing: var(--tracking-wide);
 }
 
+/* Loading spinner — chip blue border */
 .loading-spinner {
   display: inline-block;
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: #fff;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(30, 114, 204, 0.2);
+  border-top-color: var(--chip);
   border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+  animation: spin 0.65s linear infinite;
+  flex-shrink: 0;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--bg-dark); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ─── Scrollbar ───────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--felt);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}

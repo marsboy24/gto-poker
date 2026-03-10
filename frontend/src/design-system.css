@@ -1,0 +1,213 @@
+/* ============================================================
+   GTO Poker Calculator — Design System
+   Domain: Felt green surfaces · Chip blue accent · Terminal precision
+   Depth: Borders-only (no decorative shadows)
+   Spacing: 8px base grid
+   ============================================================ */
+
+:root {
+
+  /* ──────────────────────────────────────────────────────────
+     COLOR PRIMITIVES
+     Raw hue values — never use directly in components.
+     All semantic tokens below map to these.
+  ────────────────────────────────────────────────────────── */
+
+  /* Felt greens — the physical poker table surface */
+  --primitive-felt-0:    #040d07;   /* deepest black-green */
+  --primitive-felt-1:    #0a1a0f;   /* dark felt — app canvas */
+  --primitive-felt-2:    #0f2216;   /* baize — card/panel surface */
+  --primitive-felt-3:    #152d1e;   /* rail — elevated panels */
+  --primitive-felt-4:    #1c3a27;   /* rim — hover/active surface */
+  --primitive-felt-5:    #243f2c;   /* highlight surface */
+
+  /* Chip blue — the accent, cold and precise like a chip stack */
+  --primitive-chip-0:    #0b2a4a;
+  --primitive-chip-1:    #0e3d6e;
+  --primitive-chip-2:    #1557a0;
+  --primitive-chip-3:    #1e72cc;
+  --primitive-chip-4:    #4a9edd;
+  --primitive-chip-5:    #7fc0ed;
+
+  /* Gold — emphasis, selected states, high-value information */
+  --primitive-gold-0:    #3d2a00;
+  --primitive-gold-1:    #6b4a00;
+  --primitive-gold-2:    #9e6f00;
+  --primitive-gold-3:    #c49020;
+  --primitive-gold-4:    #d4a843;
+  --primitive-gold-5:    #e8c97a;
+
+  /* Action reds — fold, danger */
+  --primitive-red-0:     #2d0a0a;
+  --primitive-red-1:     #5c1414;
+  --primitive-red-2:     #8c2020;
+  --primitive-red-3:     #c03838;
+  --primitive-red-4:     #d95050;
+  --primitive-red-5:     #e88080;
+
+  /* Action greens — bet, raise, in range */
+  --primitive-green-0:   #071a0e;
+  --primitive-green-1:   #0e3318;
+  --primitive-green-2:   #165224;
+  --primitive-green-3:   #217a36;
+  --primitive-green-4:   #2ea84d;
+  --primitive-green-5:   #5ccc7a;
+
+  /* Neutral ink — text hierarchy */
+  --primitive-ink-0:     #e8f0e8;   /* primary — near-white green tint */
+  --primitive-ink-1:     #8fa88f;   /* secondary — muted sage */
+  --primitive-ink-2:     #5a7060;   /* tertiary — dim moss */
+  --primitive-ink-3:     #3a4e3f;   /* muted — ghost text */
+
+
+  /* ──────────────────────────────────────────────────────────
+     SURFACE TOKENS — Elevation hierarchy
+     Same felt-green hue, lightness shifts only.
+     Higher elevation = slightly lighter.
+  ────────────────────────────────────────────────────────── */
+
+  --felt:          var(--primitive-felt-1);   /* Level 0: app canvas */
+  --baize:         var(--primitive-felt-2);   /* Level 1: cards, panels */
+  --rail:          var(--primitive-felt-3);   /* Level 2: elevated panels, inputs */
+  --rim:           var(--primitive-felt-4);   /* Level 3: hover/active surfaces */
+  --overlay:       var(--primitive-felt-5);   /* Level 4: dropdowns, tooltips */
+
+
+  /* ──────────────────────────────────────────────────────────
+     TEXT TOKENS — 4-level hierarchy
+  ────────────────────────────────────────────────────────── */
+
+  --text-primary:    var(--primitive-ink-0);   /* default text, high contrast */
+  --text-secondary:  var(--primitive-ink-1);   /* supporting text, labels */
+  --text-tertiary:   var(--primitive-ink-2);   /* metadata, timestamps */
+  --text-muted:      var(--primitive-ink-3);   /* disabled, placeholders */
+
+
+  /* ──────────────────────────────────────────────────────────
+     BORDER TOKENS — Progression from subtle to strong
+     All rgba blends with the felt surface.
+  ────────────────────────────────────────────────────────── */
+
+  --border-subtle:   rgba(232, 240, 232, 0.04);   /* faintest structure lines */
+  --border-default:  rgba(232, 240, 232, 0.08);   /* standard panel borders */
+  --border-strong:   rgba(232, 240, 232, 0.14);   /* hover/active emphasis */
+  --border-focus:    rgba(30, 114, 204, 0.6);     /* focus rings — chip blue */
+
+
+  /* ──────────────────────────────────────────────────────────
+     CONTROL TOKENS — Form inputs, dedicated token set
+  ────────────────────────────────────────────────────────── */
+
+  --control-bg:       var(--primitive-felt-2);    /* input background */
+  --control-border:   rgba(232, 240, 232, 0.12);  /* input border */
+  --control-focus:    rgba(30, 114, 204, 0.5);    /* input focus ring */
+
+
+  /* ──────────────────────────────────────────────────────────
+     BRAND / ACCENT TOKENS
+  ────────────────────────────────────────────────────────── */
+
+  --chip:        var(--primitive-chip-3);    /* primary chip-blue accent */
+  --chip-bright: var(--primitive-chip-4);   /* brighter, hover states */
+  --chip-dim:    var(--primitive-chip-1);   /* dimmer, background washes */
+
+  --gold:        var(--primitive-gold-4);   /* emphasis, selected, headers */
+  --gold-bright: var(--primitive-gold-5);   /* hover gold */
+  --gold-dim:    var(--primitive-gold-2);   /* background wash */
+
+
+  /* ──────────────────────────────────────────────────────────
+     ACTION SEMANTIC TOKENS
+     Poker action colors — every action maps to a domain meaning.
+  ────────────────────────────────────────────────────────── */
+
+  --action-fold:    var(--primitive-red-4);     /* surrender — red */
+  --action-check:   var(--primitive-chip-3);    /* free look — chip blue */
+  --action-call:    var(--primitive-chip-4);    /* match — lighter blue */
+  --action-bet:     var(--primitive-green-4);   /* aggression — green */
+  --action-raise:   var(--primitive-gold-4);    /* re-aggression — gold */
+  --action-other:   var(--primitive-ink-2);     /* catch-all */
+
+  /* Hand range frequency colors */
+  --range-raise:  var(--primitive-green-4);   /* ≥66% frequency — strong green */
+  --range-mixed:  var(--primitive-gold-4);    /* 25–66% frequency — gold */
+  --range-rare:   var(--primitive-red-4);     /* <25% frequency — red */
+  --range-dead:   var(--primitive-felt-4);    /* not in range — dark felt */
+
+  /* Equity positive/negative signal */
+  --equity-high:  var(--primitive-green-4);
+  --equity-mid:   var(--primitive-gold-4);
+  --equity-low:   var(--primitive-red-4);
+
+
+  /* ──────────────────────────────────────────────────────────
+     SPACING SCALE — Strict 8px grid
+  ────────────────────────────────────────────────────────── */
+
+  --space-1:   4px;    /* micro — icon gaps, tight pairs */
+  --space-2:   8px;    /* base unit */
+  --space-3:  16px;    /* component padding */
+  --space-4:  24px;    /* section spacing */
+  --space-5:  32px;    /* major separation */
+  --space-6:  48px;    /* large structural gaps */
+
+
+  /* ──────────────────────────────────────────────────────────
+     BORDER RADIUS SCALE — Sharp, technical personality
+  ────────────────────────────────────────────────────────── */
+
+  --radius-sm:  4px;    /* inputs, buttons, small chips */
+  --radius-md:  6px;    /* cards, panels */
+  --radius-lg: 10px;    /* modals, containers */
+
+
+  /* ──────────────────────────────────────────────────────────
+     TYPOGRAPHY SCALE
+  ────────────────────────────────────────────────────────── */
+
+  /* Font families */
+  --font-ui:   'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', 'Menlo', monospace;
+
+  /* Sizes */
+  --text-xs:   11px;
+  --text-sm:   12px;
+  --text-base: 13px;
+  --text-md:   14px;
+  --text-lg:   16px;
+  --text-xl:   18px;
+  --text-2xl:  22px;
+
+  /* Weights */
+  --weight-normal:  400;
+  --weight-medium:  500;
+  --weight-semi:    600;
+  --weight-bold:    700;
+
+  /* Letter spacing */
+  --tracking-tight:  -0.3px;
+  --tracking-normal:  0px;
+  --tracking-wide:    0.4px;
+  --tracking-caps:    0.7px;
+
+
+  /* ──────────────────────────────────────────────────────────
+     TRANSITION
+  ────────────────────────────────────────────────────────── */
+
+  --transition-fast:   0.12s ease;
+  --transition-base:   0.18s ease;
+  --transition-slow:   0.25s ease-out;
+
+
+  /* ──────────────────────────────────────────────────────────
+     NO DECORATIVE SHADOWS
+     Depth is established entirely through borders and surface
+     color shifts. The one exception is tooltips which need
+     genuine lift above the grid.
+  ────────────────────────────────────────────────────────── */
+
+  --shadow-none:     none;
+  --shadow-tooltip:  0 4px 16px rgba(0, 0, 0, 0.7);   /* tooltip only */
+
+}

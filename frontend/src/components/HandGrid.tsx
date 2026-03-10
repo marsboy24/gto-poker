@@ -45,15 +45,19 @@ function freqToClass(freq: number | undefined): string {
 
 function freqToColor(freq: number | undefined): string {
   if (freq === undefined || freq === 0) return ''
-  // Interpolate a background to show exact frequency within category
+  // Interpolate background to show exact frequency within category
+  // All colors reference design-system.css primitive values
   if (freq >= 0.66) {
     const intensity = Math.min(1, freq)
-    return `rgba(60, 185, 110, ${0.5 + intensity * 0.5})`
+    // --range-raise base: #2ea84d — interpolate opacity for density signal
+    return `rgba(46, 168, 77, ${0.45 + intensity * 0.55})`
   }
   if (freq >= 0.25) {
-    return `rgba(212, 168, 67, ${0.5 + freq * 0.5})`
+    // --range-mixed base: #d4a843
+    return `rgba(212, 168, 67, ${0.45 + freq * 0.55})`
   }
-  return `rgba(224, 92, 92, ${0.3 + freq * 1.5})`
+  // --range-rare base: #d95050
+  return `rgba(217, 80, 80, ${0.28 + freq * 1.6})`
 }
 
 const HandGrid: React.FC<HandGridProps> = ({
@@ -100,13 +104,13 @@ const HandGrid: React.FC<HandGridProps> = ({
 
   return (
     <div className="panel">
-      <div className="panel-title">
-        Hand Range Grid — {position} ({action.replace('_', ' ')})
+      <div className="panel-title panel-title-gold">
+        Hand Range Matrix — {position} · {action.replace('_', ' ')}
       </div>
 
       {loading && (
-        <div className="text-muted" style={{ marginBottom: 12 }}>
-          <span className="loading-spinner" style={{ marginRight: 8 }} />
+        <div className="text-muted" style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span className="loading-spinner" />
           Loading ranges...
         </div>
       )}
@@ -118,54 +122,48 @@ const HandGrid: React.FC<HandGridProps> = ({
 
       {!loading && !error && (
         <>
-          {/* Column headers */}
+          {/* The signature element: the 13×13 matrix in its framing */}
           <div className="hand-grid-wrapper">
+            {/* Column headers */}
             <div
               style={{
                 display: 'grid',
                 gridTemplateColumns: '18px repeat(13, 1fr)',
                 gap: '2px',
-                minWidth: 520,
+                minWidth: 540,
                 marginBottom: 2,
               }}
             >
-              <div /> {/* corner */}
+              <div /> {/* corner spacer */}
               {RANKS.map((r) => (
                 <div
                   key={r}
-                  style={{
-                    textAlign: 'center',
-                    fontSize: '0.65rem',
-                    fontWeight: 700,
-                    color: 'var(--text-muted)',
-                    paddingBottom: 2,
-                  }}
+                  className="grid-axis-label"
+                  style={{ paddingBottom: 2 }}
                 >
                   {r}
                 </div>
               ))}
             </div>
 
+            {/* Grid with row labels */}
             <div
               style={{
                 display: 'grid',
                 gridTemplateColumns: '18px repeat(13, 1fr)',
                 gap: '2px',
-                minWidth: 520,
+                minWidth: 540,
+                border: '1px solid var(--border-strong)',
+                borderRadius: 'var(--radius-sm)',
+                padding: '6px',
+                background: 'var(--felt)',
               }}
             >
               {RANKS.flatMap((rank, row) => [
                 // Row label
                 <div
                   key={`label-${row}`}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '0.65rem',
-                    fontWeight: 700,
-                    color: 'var(--text-muted)',
-                  }}
+                  className="grid-axis-label"
                 >
                   {rank}
                 </div>,
@@ -198,7 +196,9 @@ const HandGrid: React.FC<HandGridProps> = ({
                         <div className="hand-cell-tooltip">
                           <strong>{hand}</strong>
                           {' — '}
-                          {freq !== undefined ? `${(freq * 100).toFixed(1)}%` : 'Not in range'}
+                          {freq !== undefined
+                            ? `${(freq * 100).toFixed(1)}%`
+                            : 'Not in range'}
                         </div>
                       )}
                     </div>
@@ -211,22 +211,37 @@ const HandGrid: React.FC<HandGridProps> = ({
           {/* Legend */}
           <div className="grid-legend">
             <div className="legend-item">
-              <div className="legend-swatch" style={{ background: 'var(--green)' }} />
+              <div
+                className="legend-swatch"
+                style={{ background: 'var(--range-raise)' }}
+              />
               Raise ≥ 66%
             </div>
             <div className="legend-item">
-              <div className="legend-swatch" style={{ background: 'var(--yellow)' }} />
+              <div
+                className="legend-swatch"
+                style={{ background: 'var(--range-mixed)' }}
+              />
               Mixed 25–66%
             </div>
             <div className="legend-item">
-              <div className="legend-swatch" style={{ background: 'var(--red)' }} />
+              <div
+                className="legend-swatch"
+                style={{ background: 'var(--range-rare)' }}
+              />
               Rare &lt; 25%
             </div>
             <div className="legend-item">
-              <div className="legend-swatch" style={{ background: 'var(--grey)' }} />
+              <div
+                className="legend-swatch"
+                style={{ background: 'var(--range-dead)' }}
+              />
               Not in range
             </div>
-            <div className="legend-item" style={{ marginLeft: 'auto', fontStyle: 'italic' }}>
+            <div
+              className="legend-item"
+              style={{ marginLeft: 'auto', fontStyle: 'italic', color: 'var(--text-muted)' }}
+            >
               Upper-right = suited · Diagonal = pairs · Lower-left = offsuit
             </div>
           </div>

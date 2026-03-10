@@ -41,6 +41,19 @@ function formatActionLabel(key: string): string {
     .replace(/Bb/g, 'bb')
 }
 
+// Maps action base key to a CSS variable for the label text color
+function getActionLabelColor(actionKey: string): string {
+  const base = actionKey.split('_')[0]
+  const map: Record<string, string> = {
+    fold:  'var(--action-fold)',
+    check: 'var(--action-check)',
+    call:  'var(--action-call)',
+    bet:   'var(--action-bet)',
+    raise: 'var(--action-raise)',
+  }
+  return map[base] ?? 'var(--text-secondary)'
+}
+
 const TOTAL_ITERATIONS = 1000
 
 const SolverOutput: React.FC<SolverOutputProps> = ({ playerCount, stacks }) => {
@@ -215,12 +228,17 @@ const SolverOutput: React.FC<SolverOutputProps> = ({ playerCount, stacks }) => {
 
   return (
     <div className="postflop-layout">
-      {/* ── Left: Inputs ── */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* ── Left: Input panels — baize surface (slightly lighter) ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+
+        {/* Board input — inset card entry */}
         <div className="panel">
           <div className="panel-title">Board Cards</div>
-          <div className="text-muted" style={{ marginBottom: 8 }}>
-            Enter 3–5 cards (e.g. As, Kh, 2c)
+          <div
+            className="text-muted"
+            style={{ marginBottom: 'var(--space-1)', fontFamily: 'var(--font-mono)' }}
+          >
+            Enter 3–5 cards (e.g. As Kh 2c)
           </div>
           <div className="board-input">
             {boardCards.map((card, i) => (
@@ -228,7 +246,7 @@ const SolverOutput: React.FC<SolverOutputProps> = ({ playerCount, stacks }) => {
                 key={i}
                 type="text"
                 maxLength={2}
-                placeholder={i < 3 ? `C${i + 1}` : i === 3 ? 'Turn' : 'River'}
+                placeholder={i < 3 ? `C${i + 1}` : i === 3 ? 'Tn' : 'Rv'}
                 value={card}
                 onChange={(e) => {
                   const updated = [...boardCards]
@@ -241,6 +259,7 @@ const SolverOutput: React.FC<SolverOutputProps> = ({ playerCount, stacks }) => {
           </div>
         </div>
 
+        {/* Hero hand — inset card entry */}
         <div className="panel">
           <div className="panel-title">Hero Hand</div>
           <div className="hand-input">
@@ -249,7 +268,7 @@ const SolverOutput: React.FC<SolverOutputProps> = ({ playerCount, stacks }) => {
                 key={i}
                 type="text"
                 maxLength={2}
-                placeholder={i === 0 ? 'Card 1' : 'Card 2'}
+                placeholder={i === 0 ? 'C1' : 'C2'}
                 value={card}
                 onChange={(e) => {
                   const updated = [...heroHand]
@@ -262,6 +281,7 @@ const SolverOutput: React.FC<SolverOutputProps> = ({ playerCount, stacks }) => {
           </div>
         </div>
 
+        {/* Game parameters */}
         <div className="panel">
           <div className="panel-title">Game Parameters</div>
 
@@ -274,6 +294,7 @@ const SolverOutput: React.FC<SolverOutputProps> = ({ playerCount, stacks }) => {
               step={0.5}
               value={pot}
               onChange={(e) => setPot(parseFloat(e.target.value) || 0)}
+              style={{ fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}
             />
           </div>
 
@@ -292,20 +313,22 @@ const SolverOutput: React.FC<SolverOutputProps> = ({ playerCount, stacks }) => {
           </div>
 
           <div className="form-row">
-            <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, textTransform: 'none', letterSpacing: 0 }}>
               <input
                 type="checkbox"
                 checked={useWebSocket}
                 onChange={(e) => setUseWebSocket(e.target.checked)}
                 style={{ width: 'auto' }}
               />
-              Stream via WebSocket (live updates)
+              <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', fontFamily: 'var(--font-ui)' }}>
+                Stream via WebSocket
+              </span>
             </label>
           </div>
 
           {error && <div className="error-msg">{error}</div>}
 
-          <div className="row" style={{ gap: 8, marginTop: 8 }}>
+          <div className="row" style={{ gap: 'var(--space-1)', marginTop: 'var(--space-2)' }}>
             <button
               className="btn btn-primary"
               onClick={handleSolve}
@@ -331,7 +354,7 @@ const SolverOutput: React.FC<SolverOutputProps> = ({ playerCount, stacks }) => {
           {loading && (
             <div className="progress-wrap">
               <div className="progress-label">
-                {progress < 100 ? `Running MCCFR... ${progress}%` : 'Complete'}
+                {progress < 100 ? `MCCFR ${progress}%` : 'Complete'}
               </div>
               <div className="progress-track">
                 <div className="progress-fill" style={{ width: `${progress}%` }} />
@@ -341,34 +364,85 @@ const SolverOutput: React.FC<SolverOutputProps> = ({ playerCount, stacks }) => {
         </div>
       </div>
 
-      {/* ── Right: Results ── */}
-      <div className="panel">
-        <div className="panel-title">Solver Results</div>
+      {/* ── Right: Output panel — felt base surface (slightly darker) ── */}
+      <div
+        className="panel"
+        style={{
+          background: 'var(--felt)',
+          borderColor: 'var(--border-strong)',
+        }}
+      >
+        <div className="panel-title panel-title-gold">Solver Results</div>
 
         {!result && !loading && (
-          <div className="text-muted" style={{ padding: '20px 0' }}>
-            Enter hand details and click Solve to compute the GTO strategy.
+          <div
+            className="text-muted"
+            style={{
+              padding: 'var(--space-4) 0',
+              fontFamily: 'var(--font-mono)',
+              fontSize: 'var(--text-xs)',
+              lineHeight: 1.7,
+            }}
+          >
+            Enter board + hole cards, then click Solve.<br />
+            GTO strategy computed via MCCFR.
           </div>
         )}
 
         {loading && !result && (
-          <div className="text-muted" style={{ padding: '20px 0' }}>
-            <span className="loading-spinner" style={{ marginRight: 8 }} />
+          <div
+            className="text-muted"
+            style={{
+              padding: 'var(--space-4) 0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--space-2)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: 'var(--text-xs)',
+            }}
+          >
+            <span className="loading-spinner" />
             Running MCCFR solver...
           </div>
         )}
 
         {result && (
           <>
+            {/* Equity display — monospace tabular-nums */}
             <div className="equity-badge">
               <span className="eq-label">Hero Equity</span>
-              {(result.equity * 100).toFixed(1)}%
+              <span className="equity-number">
+                {(result.equity * 100).toFixed(1)}%
+              </span>
             </div>
 
             <div className="divider" />
 
-            <div className="panel-title" style={{ fontSize: '0.85rem', marginBottom: 10 }}>
-              GTO Strategy ({result.iterations} iterations)
+            {/* Strategy section header */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'baseline',
+                justifyContent: 'space-between',
+                marginBottom: 'var(--space-2)',
+              }}
+            >
+              <div
+                className="panel-title"
+                style={{ marginBottom: 0, borderBottom: 'none', paddingBottom: 0 }}
+              >
+                GTO Strategy
+              </div>
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 'var(--text-xs)',
+                  color: 'var(--text-muted)',
+                  fontVariantNumeric: 'tabular-nums',
+                }}
+              >
+                {result.iterations.toLocaleString()} iter
+              </span>
             </div>
 
             <div className="strategy-chart">
@@ -376,10 +450,15 @@ const SolverOutput: React.FC<SolverOutputProps> = ({ playerCount, stacks }) => {
                 .sort(([, a], [, b]) => b - a)
                 .map(([action, freq]) => {
                   const colorClass = getActionColor(action)
+                  const labelColor = getActionLabelColor(action)
                   const pct = (freq * 100).toFixed(1)
                   return (
                     <div key={action} className="strategy-bar-row">
-                      <div className="strategy-bar-label" title={action}>
+                      <div
+                        className="strategy-bar-label"
+                        title={action}
+                        style={{ color: labelColor }}
+                      >
                         {formatActionLabel(action)}
                       </div>
                       <div className="strategy-bar-track">
@@ -395,7 +474,7 @@ const SolverOutput: React.FC<SolverOutputProps> = ({ playerCount, stacks }) => {
             </div>
 
             {loading && (
-              <div className="progress-wrap" style={{ marginTop: 16 }}>
+              <div className="progress-wrap" style={{ marginTop: 'var(--space-3)' }}>
                 <div className="progress-label">Refining... {progress}%</div>
                 <div className="progress-track">
                   <div className="progress-fill" style={{ width: `${progress}%` }} />
